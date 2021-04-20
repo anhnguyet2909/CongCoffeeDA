@@ -1,33 +1,34 @@
 {
   "project_info": {
-    "project_number": "438987773217",
-    "project_id": "datacoffee-eca37",
-    "storage_bucket": "datacoffee-eca37.appspot.com"
+    "project_number": "10141806284",
+    "firebase_url": "https://coffeedata-41ddc-default-rtdb.firebaseio.com",
+    "project_id": "coffeedata-41ddc",
+    "storage_bucket": "coffeedata-41ddc.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:438987773217:android:c726e7ad404562bc355a60",
+        "mobilesdk_app_id": "1:10141806284:android:3518425fa1df73fd71dc69",
         "android_client_info": {
           "package_name": "com.example.coffee"
         }
       },
       "oauth_client": [
         {
-          "client_id": "438987773217-9nohibj0voaqet01sn23psuccn414bmj.apps.googleusercontent.com",
+          "client_id": "10141806284-ft6ugib5lp3pcbab115ab3edvlnv8t64.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDgwrC5STGXNHZoAc1FNehU_GI2vZSDOO8"
+          "current_key": "AIzaSyDbWn7Ulqe_B4mq_aoPfsHmDtOHi3xKnr8"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "438987773217-9nohibj0voaqet01sn23psuccn414bmj.apps.googleusercontent.com",
+              "client_id": "10141806284-ft6ugib5lp3pcbab115ab3edvlnv8t64.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

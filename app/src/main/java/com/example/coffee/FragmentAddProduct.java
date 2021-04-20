@@ -196,10 +196,10 @@ public class FragmentAddProduct extends Fragment {
                         {
                             dialog.dismiss();
                             Toast.makeText(getContext(),"File Uploaded",Toast.LENGTH_LONG).show();
-                            Task<Uri> downloadURL = taskSnapshot.getStorage().getDownloadUrl();
-                            if(downloadURL.isSuccessful()){
-                                product_image=downloadURL.getResult().toString();
-                            }
+//                            Task<Uri> downloadURL = taskSnapshot.getStorage().getDownloadUrl();
+//                            if(downloadURL.isSuccessful()){
+//                                product_image=downloadURL.getResult().toString();
+//                            }
                         }
                     })
                     .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
