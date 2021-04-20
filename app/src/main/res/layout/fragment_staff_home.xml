@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <SearchView
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_40sdp"
+            android:background="@drawable/bg_search_bar"
+            android:id="@+id/search_bar"/>
+
+       <ScrollView
+           android:layout_width="match_parent"
+           android:layout_height="match_parent">
+           <LinearLayout
+               android:layout_width="match_parent"
+               android:layout_height="match_parent"
+               android:orientation="vertical">
+               <RelativeLayout
+                   android:layout_width="match_parent"
+                   android:layout_height="@dimen/_150sdp">
+
+                   <androidx.viewpager.widget.ViewPager
+                       android:id="@+id/viewPhoto"
+                       android:layout_width="match_parent"
+                       android:layout_height="match_parent" />
+
+                   <me.relex.circleindicator.CircleIndicator
+                       android:id="@+id/circle_indicator"
+                       android:layout_width="wrap_content"
+                       android:layout_height="@dimen/_30sdp"
+                       android:layout_alignParentBottom="true"
+                       android:layout_centerInParent="true"
+                       android:layout_marginBottom="@dimen/_5sdp" />
+               </RelativeLayout>
+
+               <LinearLayout
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+                   android:layout_marginTop="@dimen/_5sdp"
+                   android:orientation="horizontal">
+
+                   <TextView
+                       android:textStyle="bold"
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:text="Coffee"
+                       android:textColor="@color/textColor"
+                       android:textSize="@dimen/_13sdp" />
+
+                   <View
+                       android:layout_width="match_parent"
+                       android:layout_height="@dimen/_1sdp"
+                       android:layout_gravity="center"
+                       android:background="@color/bg_view" />
+               </LinearLayout>
+
+               <androidx.recyclerview.widget.RecyclerView
+                   android:id="@+id/rvCoffee"
+                   android:layout_width="wrap_content"
+                   android:layout_height="@dimen/_170sdp" />
+
+               <LinearLayout
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+                   android:layout_marginTop="@dimen/_5sdp"
+                   android:orientation="horizontal">
+
+                   <TextView
+                       android:textStyle="bold"
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:text="Sinh tố"
+                       android:textColor="@color/textColor"
+                       android:textSize="@dimen/_13sdp" />
+
+                   <View
+                       android:layout_width="match_parent"
+                       android:layout_height="@dimen/_1sdp"
+                       android:layout_gravity="center"
+                       android:background="@color/bg_view" />
+               </LinearLayout>
+
+               <androidx.recyclerview.widget.RecyclerView
+                   android:id="@+id/rvJuice"
+                   android:layout_width="wrap_content"
+                   android:layout_height="@dimen/_170sdp" />
+
+               <LinearLayout
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+                   android:layout_marginTop="@dimen/_5sdp"
+                   android:orientation="horizontal">
+
+                   <TextView
+                       android:textStyle="bold"
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:text="Trà"
+                       android:textColor="@color/textColor"
+                       android:textSize="@dimen/_13sdp" />
+
+                   <View
+                       android:layout_width="match_parent"
+                       android:layout_height="@dimen/_1sdp"
+                       android:layout_gravity="center"
+                       android:background="@color/bg_view" />
+               </LinearLayout>
+
+               <androidx.recyclerview.widget.RecyclerView
+                   android:id="@+id/rvTea"
+                   android:layout_width="wrap_content"
+                   android:layout_height="@dimen/_170sdp" />
+               <LinearLayout
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+                   android:layout_marginTop="@dimen/_5sdp"
+                   android:orientation="horizontal">
+
+                   <TextView
+                       android:textStyle="bold"
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:text="Loại khác"
+                       android:textColor="@color/textColor"
+                       android:textSize="@dimen/_13sdp" />
+
+                   <View
+                       android:layout_width="match_parent"
+                       android:layout_height="@dimen/_1sdp"
+                       android:layout_gravity="center"
+                       android:background="@color/bg_view" />
+               </LinearLayout>
+
+               <androidx.recyclerview.widget.RecyclerView
+                   android:id="@+id/rvOthers"
+                   android:layout_width="wrap_content"
+                   android:layout_height="@dimen/_170sdp" />
+           </LinearLayout>
+       </ScrollView>
+    </LinearLayout>
+</layout>

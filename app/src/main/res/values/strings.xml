@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Coffee</string>
+    <string name="back4app_server_url">https://parseapi.back4app.com/</string>
+
+    <!-- Change the following strings as required -->
+    <string name="back4app_app_id">QN2JbU88NUHm4acidNTCX4tVsdk0Ov4z2Z47856V</string>
+    <string name="back4app_client_key">4AfnEv2u19VTHzQcx08rdHOhNiV8qeXkuZ6qKlUJ</string>
+    <string name="sender">438987773217</string>
+    <string name="title_activity_admin">Admin</string>
+    <string name="tab_text_1">Tab 1</string>
+    <string name="tab_text_2">Tab 2</string>
+</resources>

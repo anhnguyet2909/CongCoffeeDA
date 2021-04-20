@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:padding="@dimen/_3sdp"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <TextView
+        android:layout_width="@dimen/_180sdp"
+        android:textSize="@dimen/_14sdp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_btn_save"
+        android:textColor="@color/text"
+        android:padding="@dimen/_7sdp"
+        android:id="@+id/tvMaterialNameSelected"/>
+    <EditText
+        android:text="0"
+        android:gravity="right"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="@dimen/_7sdp"
+        android:background="@drawable/bg_btn_save"
+        android:layout_marginLeft="@dimen/_10sdp"
+        android:inputType="number|numberDecimal"
+        android:textColor="@color/text"
+        android:id="@+id/etAmountMaterialSelected"/>
+</LinearLayout>

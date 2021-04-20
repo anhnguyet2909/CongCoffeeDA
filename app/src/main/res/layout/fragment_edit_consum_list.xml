@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout
+        android:padding="@dimen/_10sdp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/bg_button"
+        android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <ImageView
+                android:layout_width="@dimen/_20sdp"
+                android:layout_height="@dimen/_20sdp"
+                android:src="@drawable/arrow_brown"
+                android:id="@+id/btnBackAddConsum"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:textColor="@color/textColor"
+                android:text="Danh sách nguyên liệu"
+                android:textSize="@dimen/_16sdp"
+                android:layout_marginLeft="@dimen/_10sdp"/>
+        </LinearLayout>
+        <TextView
+            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text"
+            android:textSize="@dimen/_15sdp"
+            android:id="@+id/tvProductNameConsumList"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:text="Nguyên liệu"
+            android:textColor="@color/text"
+            android:textSize="@dimen/_16sdp"/>
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_200sdp"
+            android:id="@+id/rvMaterialProduct"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Thêm nguyên liệu"
+            android:textColor="@color/text"
+            android:textSize="@dimen/_15sdp"
+            android:layout_gravity="right"
+            android:id="@+id/tvAddConsumProduct"/>
+        <Button
+            android:layout_marginTop="@dimen/_20sdp"
+            android:layout_width="@dimen/_70sdp"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/_14sdp"
+            android:text="Lưu"
+            android:textAllCaps="false"
+            android:background="@drawable/bg_btn_save"
+            android:layout_gravity="center"
+            android:id="@+id/btnSaveMaterialProduct"/>
+    </LinearLayout>
+</layout>
