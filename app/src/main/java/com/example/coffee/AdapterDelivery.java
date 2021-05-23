@@ -16,10 +16,10 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class AdapterDelivery extends RecyclerView.Adapter<AdapterDelivery.ViewHolder> {
-    List<Order> list;
+    List<Receipt> list;
     onOrderClick onOrderClick;
 
-    public AdapterDelivery(List<Order> list) {
+    public AdapterDelivery(List<Receipt> list) {
         this.list = list;
     }
 
@@ -38,17 +38,8 @@ public class AdapterDelivery extends RecyclerView.Adapter<AdapterDelivery.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull AdapterDelivery.ViewHolder holder, int position) {
-        final Order order =list.get(position);
-        holder.tvTableID.setText(order.getTableID()+"");
-        holder.tvTableName.setText(order.getName());
-        holder.tvStaffOrder.setText(order.getNote());
-//        holder.tvTotalPrice.setText("");
-        holder.llDeliveryItem.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onOrderClick.onShowListProduct(order);
-            }
-        });
+        final Receipt receipt =list.get(position);
+
     }
 
     @Override

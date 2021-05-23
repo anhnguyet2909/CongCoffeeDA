@@ -64,7 +64,7 @@ public class FragmentAdminStaff extends Fragment {
                 SharedPreferences.Editor editor=sharedPreferences.edit();
                 editor.putString("user_id", user.getId());
                 editor.putString("user_name", user.getName());
-                editor.putString("user_image", user.getImage());
+                editor.putString("user_image", user.getFullLinkAvatar());
                 editor.putString("user_phone", user.getPhone());
                 editor.putInt("user_type", user.getRole());
                 editor.commit();

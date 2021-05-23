@@ -1,21 +1,33 @@
 package Object;
 
-public class User {
-    String id;
-    String name, username, pass, phone, image;
-    int role;
+import com.google.gson.annotations.SerializedName;
 
-    public User() {
+public class User {
+
+    @SerializedName("id")
+    public String id;
+    @SerializedName("name")
+    public String name;
+    @SerializedName("email")
+    public String email;
+    @SerializedName("password")
+    public String password;
+    @SerializedName("avatar")
+    public String avatar;
+    @SerializedName("phone")
+    public String phone;
+    @SerializedName("role")
+    public int role;
+    @SerializedName("status")
+    public int status;
+
+    public User(String email, String password) {
+        this.email = email;
+        this.password = password;
     }
 
-    public User(String id, String name, String username, String pass, String phone, String image, int role) {
-        this.id = id;
-        this.name = name;
-        this.username = username;
-        this.pass = pass;
-        this.phone = phone;
-        this.image = image;
-        this.role = role;
+    public String getFullLinkAvatar(){
+        return APIClient.HOST+avatar;
     }
 
     public String getId() {
@@ -34,20 +46,20 @@ public class User {
         this.name = name;
     }
 
-    public String getUsername() {
-        return username;
+    public String getEmail() {
+        return email;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
-    public String getPass() {
-        return pass;
+    public String getPassword() {
+        return password;
     }
 
-    public void setPass(String pass) {
-        this.pass = pass;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getPhone() {
@@ -58,19 +70,19 @@ public class User {
         this.phone = phone;
     }
 
-    public String getImage() {
-        return image;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
-    }
-
     public int getRole() {
         return role;
     }
 
     public void setRole(int role) {
         this.role = role;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
     }
 }

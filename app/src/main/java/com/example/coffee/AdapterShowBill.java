@@ -34,11 +34,11 @@ public class AdapterShowBill extends RecyclerView.Adapter<AdapterShowBill.ViewHo
 //        final OrderList orderList1=list.get(position);
         final Product product=productList.get(position);
 
-        holder.tvSTT.setText(product.getId()+"");
-        holder.tvOrderName.setText(product.getName());
-        holder.tvOrderPrice.setText(product.getPrice()+"");
-        holder.tvCount.setText(product.getTypeID()+"");
-        holder.tvOrderTotalPrice.setText((product.getPrice()*product.getTypeID())+"");
+//        holder.tvSTT.setText(product.getId()+"");
+//        holder.tvOrderName.setText(product.getName());
+//        holder.tvOrderPrice.setText(product.getPrice()+"");
+//        holder.tvCount.setText(product.getTypeID()+"");
+//        holder.tvOrderTotalPrice.setText((product.getPrice()*product.getTypeID())+"");
 //        for(Order i:orderList){
 //            if(i.getTableID()==orderList1.getOrderID()) {
 //                order=i;

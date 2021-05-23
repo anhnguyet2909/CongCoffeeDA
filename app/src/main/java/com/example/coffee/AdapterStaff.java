@@ -39,8 +39,8 @@ public class AdapterStaff extends RecyclerView.Adapter<AdapterStaff.ViewHolder> 
     @Override
     public void onBindViewHolder(@NonNull AdapterStaff.ViewHolder holder, int position) {
         final User user=list.get(position);
-        Picasso.get().load(user.getImage()).into(holder.imgStaff);
-//        Picasso.get().load(R.drawable.lucky).into(holder.imgStaff);
+//        Picasso.get().load(user.getImage()).into(holder.imgStaff);
+////        Picasso.get().load(R.drawable.lucky).into(holder.imgStaff);
         holder.tvStaffName.setText(user.getName());
         String type="";
         StaffType[] a= StaffTypeDataUtils.getProductType();

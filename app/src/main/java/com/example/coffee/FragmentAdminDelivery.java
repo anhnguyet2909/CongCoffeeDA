@@ -3,11 +3,13 @@ package com.example.coffee;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,17 +23,21 @@ import com.example.coffee.databinding.FragmentAdminDeliveryBinding;
 import java.util.ArrayList;
 import java.util.List;
 import Object.*;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class FragmentAdminDelivery extends Fragment {
     FragmentAdminDeliveryBinding binding;
-    List<Order> list=new ArrayList<>();
-    List<OrderList> orderLists=new ArrayList<>();
-    List<Product> productList=new ArrayList<>();
+    List<APIInterface.ReceiptOnList> list=new ArrayList<>();
+    List<ProductOrder> productList=new ArrayList<>();
     AdapterDelivery adapterDelivery;
     AdapterShowBill adapterShowBill;
+    List<APIInterface.OrderInBarList> listTable;
     String table_name, staff_order;
     TextView tvTableNameDialog, tvStaffOrderDialog;
     RecyclerView rvShowListOrder;
+    APIInterface apiInterface=APIClient.getClient().create(APIInterface.class);
     public static FragmentAdminDelivery newInstance() {
 
         Bundle args = new Bundle();
@@ -46,28 +52,31 @@ public class FragmentAdminDelivery extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding= DataBindingUtil.inflate(inflater, R.layout.fragment_admin_delivery, container, false);
 
-//        Order o1=new Order(1, "Bàn 1", 100000, "An Huệ Hân");
-//        Order o2=new Order(2, "Bàn 2", 150000, "Trần Văn Nam");
-//        Order o3=new Order(3, "Bàn 3", 110000, "Bùi Tú Anh");
 
-//        list.add(o1);
-//        list.add(o2);
-//        list.add(o3);
-        adapterDelivery=new AdapterDelivery(list);
-        RecyclerView.LayoutManager layoutManager=new LinearLayoutManager(getContext(),
-                RecyclerView.VERTICAL, false);
-        binding.rvDelivery.setAdapter(adapterDelivery);
-        binding.rvDelivery.setLayoutManager(layoutManager);
-        adapterDelivery.setOnOrderClick(new onOrderClick() {
+        listTable=new ArrayList<APIInterface.OrderInBarList>();
+
+        getReceiptList();
+
+        return binding.getRoot();
+    }
+
+    public void getReceiptList(){
+        Call<APIInterface.ReceiptListResponse> call=apiInterface.getListReceipt();
+        call.enqueue(new Callback<APIInterface.ReceiptListResponse>() {
             @Override
-            public void onShowListProduct(Order order) {
-                table_name=order.getName();
-//                staff_order=order.getStaffID()+"";
-                alertDialog();
+            public void onResponse(Call<APIInterface.ReceiptListResponse> call, Response<APIInterface.ReceiptListResponse> response) {
+                APIInterface.ReceiptListResponse content=response.body();
+                Log.d("getReceipt", "content: " + content.totalItems);
+                Log.d("getReceipt", "response: " + response.code());
+                list=content.items;
+                Toast.makeText(getContext(), "totalItems"+list.size(), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(Call<APIInterface.ReceiptListResponse> call, Throwable t) {
 
             }
         });
-        return binding.getRoot();
     }
 
     public void alertDialog(){
@@ -78,21 +87,7 @@ public class FragmentAdminDelivery extends Fragment {
         rvShowListOrder=view.findViewById(R.id.rvShowListOrder);
         tvTableNameDialog.setText(table_name);
         tvStaffOrderDialog.setText(staff_order);
-//        OrderList ol1=new OrderList(1,1,4);
-//        OrderList ol2=new OrderList(1,3,5);
-//        OrderList ol3=new OrderList(1,2,1);
-//        OrderList ol4=new OrderList(2,1,2);
-//        OrderList ol5=new OrderList(2,3,1);
-//        orderLists.add(ol1);
-//        orderLists.add(ol2);
-//        orderLists.add(ol3);
-//        orderLists.add(ol4);
-//        orderLists.add(ol5);
-        tvTableNameDialog.setText("2");
 
-        tvStaffOrderDialog.setText("Trần Văn Nam");
-//        adapterShowBill=new AdapterShowBill(orderLists);
-        adapterShowBill=new AdapterShowBill(productList);
         RecyclerView.LayoutManager layoutManager=new LinearLayoutManager(getContext(),
                 RecyclerView.VERTICAL, false);
         rvShowListOrder.setLayoutManager(layoutManager);

@@ -45,13 +45,6 @@
 
                 </RelativeLayout>
 
-                <SearchView
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/_30sdp"
-                    android:padding="@dimen/_3sdp"
-                    android:background="@drawable/bg_button"
-                    android:layout_marginTop="@dimen/_5sdp"/>
-
                 <LinearLayout
                     android:layout_marginTop="@dimen/_5sdp"
                     android:layout_width="match_parent"

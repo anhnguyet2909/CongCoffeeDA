@@ -1,26 +1,25 @@
 package Object;
 
 public class Order {
-    String tableID;
     String name;
-    String staffName;
+    String staffName, staffPhone;
     String note;
-    String lisProduct;
+    String listProduct;
 
-    public Order(String tableID, String name, String staffName, String note, String lisProduct) {
-        this.tableID = tableID;
+    public Order(String name, String staffName, String staffPhone, String note, String lisProduct) {
+        this.staffPhone = staffPhone;
         this.name = name;
         this.staffName = staffName;
         this.note = note;
-        this.lisProduct = lisProduct;
+        this.listProduct = lisProduct;
     }
 
-    public String getTableID() {
-        return tableID;
+    public String getStaffPhone() {
+        return staffPhone;
     }
 
-    public void setTableID(String tableID) {
-        this.tableID = tableID;
+    public void setStaffPhone(String staffPhone) {
+        this.staffPhone = staffPhone;
     }
 
     public String getName() {
@@ -48,10 +47,10 @@ public class Order {
     }
 
     public String getLisProduct() {
-        return lisProduct;
+        return listProduct;
     }
 
     public void setLisProduct(String lisProduct) {
-        this.lisProduct = lisProduct;
+        this.listProduct = lisProduct;
     }
 }

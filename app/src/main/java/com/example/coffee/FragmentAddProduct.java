@@ -25,30 +25,35 @@ import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 
 import com.example.coffee.databinding.FragmentAddProductBinding;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import Object.*;
+import Object.Product;
+import Object.ProductType;
+import Object.ProductTypeDataUtils;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class FragmentAddProduct extends Fragment {
     FragmentAddProductBinding binding;
     int product_price, typeID=1;
     String product_image="", product_name, product_id;
     Uri imageUri;
-    String nameUpload;
-    FirebaseStorage firebaseStorage;
-    StorageReference reference;
+    APIInterface apiClient = APIClient.getClient().create(APIInterface.class);
     public static FragmentAddProduct newInstance() {
 
         Bundle args = new Bundle();
@@ -113,18 +118,6 @@ public class FragmentAddProduct extends Fragment {
             }
         });
 
-        if(typeID==1){
-            product_image="https://i.imgur.com/5QvoRZs.jpg";
-        }
-        else if(typeID==2){
-            product_image="https://i.imgur.com/4AcFqaj.jpg";
-        }
-        else if(typeID==3){
-            product_image="https://i.imgur.com/soziymr.jpg";
-        }
-        else{
-            product_image="https://i.imgur.com/rme5ZXi.jpg";
-        }
 
         binding.btnAddProductConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -132,11 +125,34 @@ public class FragmentAddProduct extends Fragment {
                 product_id=Constant.randomName(10);
                 product_name=binding.etAddProductName.getText().toString();
                 product_price=Integer.parseInt(binding.etAddProductPrice.getText().toString());
+                List<Options> list=new ArrayList<Options>();
+                Options options=new Options(0, "Take away", product_price);
+                list.add(options);
+                if (typeID==1){
+                    product_image="/api/images/product/cycvI6M50oHBegj.jpg";
+                }
+                else if(typeID==2){
+                    product_image="/api/images/product/mDlnfluVhyvrYH2.jpg";
+                }
+                else if(typeID==4){
+                    product_image="/api/images/product/sbASLK5btE1kTQa.jpg";
+                }
                 if(!product_image.equals("")){
-                    FirebaseDatabase firebaseDatabase=FirebaseDatabase.getInstance();
-                    DatabaseReference databaseReference=firebaseDatabase.getReference("products").child(product_id);
-                    Product product=new Product(product_id, product_name, product_image, product_price, "", typeID);
-                    databaseReference.setValue(product);
+                    Product product=new Product(product_name, product_image, list, typeID);
+                    Call<APIInterface.ProductCreateResponse> call1=apiClient.createProduct(product);
+                    call1.enqueue(new Callback<APIInterface.ProductCreateResponse>() {
+                        @Override
+                        public void onResponse(Call<APIInterface.ProductCreateResponse> call, Response<APIInterface.ProductCreateResponse> response) {
+                            Log.d("CreateProduct", "Successful");
+                            Log.d("CreateProduct", "onResponse: "+product.toString());
+                        }
+
+                        @Override
+                        public void onFailure(Call<APIInterface.ProductCreateResponse> call, Throwable t) {
+                            Log.d("CreateProduct", "Failed");
+                            Log.d("CreateProduct", "onFailed: "+product.toString());
+                        }
+                    });
 
                     Bundle bundle=new Bundle();
                     FragmentAdminProduct fragmentAdminProduct=new FragmentAdminProduct();
@@ -162,71 +178,31 @@ public class FragmentAddProduct extends Fragment {
                 Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
                 binding.imgAddProductImage.setImageBitmap(selectedImage);
                 binding.imgCamera.setVisibility(View.INVISIBLE);
-                uploadToFirebase();
-                Log.d("imagePath", product_image);
+                product_image=imageUri.toString();
+
+                String s=getRealPathFromURI(imageUri);
+                Log.d("Image", s);
             }
             catch (FileNotFoundException e){
                 e.printStackTrace();
                 Log.d("testImage", "load anh: "+e.getLocalizedMessage());
             }
-
         }
     }
 
-    private void uploadToFirebase() {
-        nameUpload= Constant.randomName(30);
-        Log.d("testimage", "start");
-        final ProgressDialog dialog=new ProgressDialog(getContext());
-        dialog.setTitle("File Uploader");
-        dialog.show();
 
-        SharedPreferences sharedPreferences=getContext().getSharedPreferences("data", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor=sharedPreferences.edit();
-        editor.putString("nameUpload", nameUpload);
-        editor.commit();
+    public String getRealPathFromURI(Uri contentUri) {
+// can post image
+        String [] proj={MediaStore.Images.Media.DATA};
+        Cursor cursor = getActivity().managedQuery( contentUri,
+                proj, // Which columns to return
+                null, // WHERE clause; which rows to return (all rows)
+                null, // WHERE clause selection arguments (none)
+                null); // Order-by clause (ascending by name)
+        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        cursor.moveToFirst();
+        return cursor.getString(column_index);
 
-        firebaseStorage=FirebaseStorage.getInstance();
-        reference=firebaseStorage.getReference("ProductImages").child(nameUpload);
-        if(imageUri!=null){
-            reference.putFile(imageUri)
-                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>()
-                    {
-                        @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot)
-                        {
-                            dialog.dismiss();
-                            Toast.makeText(getContext(),"File Uploaded",Toast.LENGTH_LONG).show();
-//                            Task<Uri> downloadURL = taskSnapshot.getStorage().getDownloadUrl();
-//                            if(downloadURL.isSuccessful()){
-//                                product_image=downloadURL.getResult().toString();
-//                            }
-                        }
-                    })
-                    .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot)
-                        {
-                            float percent=(100f*taskSnapshot.getBytesTransferred())/taskSnapshot.getTotalByteCount();
-                            dialog.setMessage("Uploaded: "+(int)percent+" %");
-
-
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(getContext(), "Fail", Toast.LENGTH_LONG).show();
-                            dialog.dismiss();
-                            Log.d("testimage", e.getLocalizedMessage());
-
-                        }
-                    });
-            Log.d("testimage", imageUri.toString());
-        }
-        else{
-            Log.d("testimage", "File is null");
-        }
-        Log.d("testimage", "finish");
     }
 
 }

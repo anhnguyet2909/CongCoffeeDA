@@ -32,8 +32,23 @@
             android:id="@+id/rvCart"
             android:layout_marginTop="@dimen/_5sdp"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/_350sdp"
+            android:layout_height="@dimen/_300sdp"
             android:background="@drawable/bg_list_order"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/textColor"
+            android:text="Ghi chú"
+            android:textSize="@dimen/_15sdp"/>
+        <EditText
+            android:padding="@dimen/_5sdp"
+            android:textColor="@color/black"
+            android:gravity="top"
+            android:id="@+id/etNote"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_70sdp"
+            android:background="@drawable/bg_list_order"
+            android:inputType="text|textMultiLine"/>
 
         <LinearLayout
             android:layout_marginTop="@dimen/_5sdp"

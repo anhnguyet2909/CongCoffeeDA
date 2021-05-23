@@ -71,7 +71,7 @@ public class FragmentEditProduct extends Fragment {
         binding.btnEditProductConfirm.setOnClickListener(v->{
             String name=binding.etEditProductName.getText().toString();
             int price=Integer.parseInt(binding.etEditProductPrice.getText().toString());
-            Product product=new Product(id, name, product_image, price, product_option, product_type);
+//            Product product=new Product(id, name, product_image, price, product_option, product_type);
 //            databaseHandler.updateProduct(product);
             Bundle bundle=new Bundle();
             FragmentAdminProduct fragmentAdminProduct=new FragmentAdminProduct();

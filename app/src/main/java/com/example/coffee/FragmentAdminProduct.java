@@ -4,9 +4,11 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,13 +29,15 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 import Object.*;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class FragmentAdminProduct extends Fragment {
     FragmentAdminProductBinding binding;
-    List<Product> listCoffee, listTea, listJuice, listOthers;
+    List<Product> listCoffee, listTea, listJuice, listOthers, list;
     AdapterProduct adapterProduct;
-    FirebaseDatabase firebaseDatabase=FirebaseDatabase.getInstance();
-    DatabaseReference databaseReference=firebaseDatabase.getReference().child("products");
+
     public static FragmentAdminProduct newInstance() {
 
         Bundle args = new Bundle();
@@ -48,89 +52,140 @@ public class FragmentAdminProduct extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding= DataBindingUtil.inflate(inflater, R.layout.fragment_admin_product, container, false);
 
+        list=new ArrayList<Product>();
+        listCoffee=new ArrayList<Product>();
+        listJuice=new ArrayList<Product>();
+        listTea=new ArrayList<Product>();
+        listOthers=new ArrayList<Product>();
+
 
         binding.btnCoffee.setTextColor(ContextCompat.getColor(getContext(),R .color.textColor));
-        databaseReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                listCoffee=new ArrayList<>();
-                listTea=new ArrayList<>();
-                listJuice=new ArrayList<>();
-                listOthers=new ArrayList<>();
-                if(snapshot.hasChildren()){
-                    for(DataSnapshot dataSnapshot:snapshot.getChildren()){
-                        Product product=dataSnapshot.getValue(Product.class);
-                        if(product.getTypeID()==1){
-                            listCoffee.add(product);
-                        }
-                        else if(product.getTypeID()==2){
-                            listTea.add(product);
-                        }
-                        else if(product.getTypeID()==3){
-                            listJuice.add(product);
-                        }
-                        else{
-                            listOthers.add(product);
-                        }
-                    }
+        loadCategoryTitle();
+        loadProductList();
 
-                    adapterProduct=new AdapterProduct(listCoffee);
-                    showProductList();
-                    binding.btnCoffee.setOnClickListener(v->{
-                        binding.btnTea.setTextColor(ContextCompat.getColor(getContext(),R .color.bg_view));
-                        binding.btnJuice.setTextColor(ContextCompat.getColor(getContext(),R .color.bg_view));
-                        binding.btnCoffee.setTextColor(ContextCompat.getColor(getContext(),R .color.textColor));
-                        binding.btnOthers.setTextColor(ContextCompat.getColor(getContext(),R .color.bg_view));
-                        adapterProduct=new AdapterProduct(listCoffee);
-                        showProductList();
-                    });
-
-                    binding.btnTea.setOnClickListener(v->{
-                        binding.btnTea.setTextColor(ContextCompat.getColor(getContext(),R .color.textColor));
-                        binding.btnJuice.setTextColor(ContextCompat.getColor(getContext(),R .color.bg_view));
-                        binding.btnCoffee.setTextColor(ContextCompat.getColor(getContext(),R .color.bg_view));
-                        binding.btnOthers.setTextColor(ContextCompat.getColor(getContext(),R .color.bg_view));
-                        adapterProduct=new AdapterProduct(listTea);
-                        showProductList();
-                    });
-
-                    binding.btnJuice.setOnClickListener(v->{
-                        binding.btnJuice.setTextColor(ContextCompat.getColor(getContext(),R .color.textColor));
-                        binding.btnCoffee.setTextColor(ContextCompat.getColor(getContext(),R .color.bg_view));
-                        binding.btnTea.setTextColor(ContextCompat.getColor(getContext(),R .color.bg_view));
-                        binding.btnOthers.setTextColor(ContextCompat.getColor(getContext(),R .color.bg_view));
-                        adapterProduct=new AdapterProduct(listJuice);
-                        showProductList();
-                    });
-
-                    binding.btnOthers.setOnClickListener(v->{
-                        binding.btnOthers.setTextColor(ContextCompat.getColor(getContext(),R .color.textColor));
-                        binding.btnJuice.setTextColor(ContextCompat.getColor(getContext(),R .color.bg_view));
-                        binding.btnTea.setTextColor(ContextCompat.getColor(getContext(),R .color.bg_view));
-                        binding.btnCoffee.setTextColor(ContextCompat.getColor(getContext(),R .color.bg_view));
-                        adapterProduct=new AdapterProduct(listOthers);
-                        showProductList();
-                    });
-
-                    binding.btnAddProduct.setOnClickListener(v->{
-                        Bundle bundle=new Bundle();
-                        FragmentAddProduct fragmentAddProduct=new FragmentAddProduct();
-                        fragmentAddProduct.setArguments(bundle);
-                        getFragmentManager().beginTransaction().replace(R.id.admin_fragment, fragmentAddProduct).commit();
-                    });
-
-                    adapterProduct.notifyDataSetChanged();
-                };
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
+        binding.btnAddProduct.setOnClickListener(v->{
+            Bundle bundle=new Bundle();
+            FragmentAddProduct fragmentAddProduct=new FragmentAddProduct();
+            fragmentAddProduct.setArguments(bundle);
+            getFragmentManager().beginTransaction().replace(R.id.admin_fragment, fragmentAddProduct).commit();
         });
 
 
+
         return binding.getRoot();
+    }
+
+    private void loadCategoryTitle() {
+        APIInterface apiInterface= APIClient.getClient().create(APIInterface.class);
+        Call<APIInterface.ListCategory> call = apiInterface.getCategories();
+        call.enqueue(new Callback<APIInterface.ListCategory>() {
+            @Override
+            public void onResponse(Call<APIInterface.ListCategory> call, Response<APIInterface.ListCategory> response) {
+                APIInterface.ListCategory data = response.body();
+                List<APIInterface.Category> categories = data.categories;
+                for (APIInterface.Category cat : categories) {
+                    Log.d("TAG123", "onResponse: cat:"+cat.name+"-->"+cat.id);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<APIInterface.ListCategory> call, Throwable t) {
+                Log.d("TAG", "onFailure: Load category fail:"+t.getMessage());
+            }
+        });
+    }
+
+
+    private void loadProductList() {
+        APIInterface apiInterface= APIClient.getClient().create(APIInterface.class);
+        Call<APIInterface.ListProduct> call=apiInterface.getListProduct();
+        call.enqueue(new Callback<APIInterface.ListProduct>() {
+            @Override
+            public void onResponse(Call<APIInterface.ListProduct> call, Response<APIInterface.ListProduct> response) {
+                APIInterface.ListProduct content = response.body();
+                list=content.items;
+                Log.d("TAG123", "onResponse: items.size:"+content.items.size());
+                Log.d("TAG123", "onResponse: code:"+response.code());
+
+                // cho nay tach category nhu the nay khong on
+                // 1. categoryId co the tahy doi
+                // 2. category name do admin qd va co the chinh sua
+                // khong phai categoryId luon la 1 2 3 4, co the la so khac
+                // tuy theo viec chinh sua category o tren database
+
+                for(Product i:list){
+                    switch (i.getCategoryId()){
+                        case 1:
+                            Log.d("TAG123", i.getCategoryId()+"");
+                            listCoffee.add(i);
+                            break;
+                        case 2:
+                            Log.d("TAG123", i.getCategoryId()+"");
+                            listTea.add(i);
+                            break;
+                        case 3:
+                            Log.d("TAG123", i.getCategoryId()+"");
+                            listJuice.add(i);
+                            break;
+                        case 4:
+                            Log.d("TAG123", i.getCategoryId()+"");
+                            listOthers.add(i);
+                            break;
+                    }
+                }
+                adapterProduct=new AdapterProduct(listCoffee);
+                showProductList();
+                allAdapter();
+            }
+
+            @Override
+            public void onFailure(Call<APIInterface.ListProduct> call, Throwable t) {
+                Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_LONG).show();
+                Log.d("Test", t.getMessage());//
+            }
+        });
+    }
+
+    public void allAdapter(){
+        //Coffee
+        binding.btnCoffee.setOnClickListener(v->{
+            adapterProduct=new AdapterProduct(listCoffee);
+            binding.btnCoffee.setTextColor(ContextCompat.getColor(getContext(),R .color.textColor));
+            binding.btnTea.setTextColor(ContextCompat.getColor(getContext(),R .color.bg_view));
+            binding.btnJuice.setTextColor(ContextCompat.getColor(getContext(),R .color.bg_view));
+            binding.btnOthers.setTextColor(ContextCompat.getColor(getContext(),R .color.bg_view));
+            showProductList();
+        });
+        binding.btnJuice.setOnClickListener(v->{
+            adapterProduct=new AdapterProduct(listJuice);
+            binding.btnJuice.setTextColor(ContextCompat.getColor(getContext(),R .color.textColor));
+            binding.btnTea.setTextColor(ContextCompat.getColor(getContext(),R .color.bg_view));
+            binding.btnCoffee.setTextColor(ContextCompat.getColor(getContext(),R .color.bg_view));
+            binding.btnOthers.setTextColor(ContextCompat.getColor(getContext(),R .color.bg_view));
+            showProductList();
+        });
+        binding.btnTea.setOnClickListener(v->{
+            adapterProduct=new AdapterProduct(listTea);
+            binding.btnTea.setTextColor(ContextCompat.getColor(getContext(),R .color.textColor));
+            binding.btnCoffee.setTextColor(ContextCompat.getColor(getContext(),R .color.bg_view));
+            binding.btnJuice.setTextColor(ContextCompat.getColor(getContext(),R .color.bg_view));
+            binding.btnOthers.setTextColor(ContextCompat.getColor(getContext(),R .color.bg_view));
+            showProductList();
+        });
+        binding.btnOthers.setOnClickListener(v->{
+            adapterProduct=new AdapterProduct(listOthers);
+            binding.btnOthers.setTextColor(ContextCompat.getColor(getContext(),R .color.textColor));
+            binding.btnTea.setTextColor(ContextCompat.getColor(getContext(),R .color.bg_view));
+            binding.btnJuice.setTextColor(ContextCompat.getColor(getContext(),R .color.bg_view));
+            binding.btnCoffee.setTextColor(ContextCompat.getColor(getContext(),R .color.bg_view));
+            showProductList();
+        });
+
+
+        Log.d("TAG123", "allAdapter: listCoffee.size():"+listCoffee.size());
+        Log.d("TAG123", "allAdapter: listTea.size():"+listTea.size());
+        Log.d("TAG123", "allAdapter: listJuice.size():"+listJuice.size());
+        Log.d("TAG123", "allAdapter: listOthers.size():"+listOthers.size());
     }
 
     public void showProductList(){
@@ -146,13 +201,11 @@ public class FragmentAdminProduct extends Fragment {
                         .setNegativeButton("Hủy", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                databaseReference.child(product.getId()).removeValue();
                             }
                         })
                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-//                                databaseHandler.deleteProduct(product);
                             }
                         })
                         .create();
@@ -168,8 +221,7 @@ public class FragmentAdminProduct extends Fragment {
                 editor.putInt("product_price", product.getPrice());
                 editor.putString("product_name", product.getName());
                 editor.putString("product_image", product.getImage());
-                editor.putString("product_option", product.getOptions());
-                editor.putInt("product_type", product.getTypeID());
+                editor.putInt("product_type", product.getCategoryId());
                 editor.commit();
                 Bundle bundle=new Bundle();
                 FragmentEditProduct fragmentEditProduct=new FragmentEditProduct();

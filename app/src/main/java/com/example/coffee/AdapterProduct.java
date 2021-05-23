@@ -1,5 +1,6 @@
 package com.example.coffee;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,10 +15,15 @@ import com.squareup.picasso.Picasso;
 import java.io.File;
 import java.util.List;
 import Object.*;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import Object.APIInterface;
 
 public class AdapterProduct extends RecyclerView.Adapter<AdapterProduct.ViewHolder> {
     List<Product> list;
     onProductClick onProductClick;
+    APIInterface.Category[] cate;
 
     public void setOnProductClick(onProductClick onProductClick) {
         this.onProductClick = onProductClick;
@@ -39,23 +45,16 @@ public class AdapterProduct extends RecyclerView.Adapter<AdapterProduct.ViewHold
     @Override
     public void onBindViewHolder(@NonNull AdapterProduct.ViewHolder holder, int position) {
         final Product product=list.get(position);
-//        Picasso.get().load(R.drawable.banner1).fit().into(holder.imgProduct);
-        if(product.getImage()!=null){
-            Picasso.get().load(product.getImage()).fit().into(holder.imgProduct);
-        }
-        else{
-            Picasso.get().load(R.drawable.ic_launcher_background).fit().into(holder.imgProduct);
-        }
+        Picasso.get().load(product.getFullLinkImage()).fit().into(holder.imgProduct);
         holder.tvProductName.setText(product.getName());
-        String type="";
-        ProductType[] a= ProductTypeDataUtils.getProductType();
-        for(int i=0; i<a.length; i++){
-            if(product.getTypeID()==a[i].getId())
-                type=a[i].getName();
-        }
-        holder.tvProductType.setText(type);
+//        loadCategoryTitle();
+//        String type="";
+//        for (APIInterface.Category category : cate) {
+//            if (product.getCategoryId() == category.id)
+//                type = category.name;
+//        }
+//        holder.tvProductType.setText(type);
         holder.tvProductPrice.setText(product.getPrice()+"");
-//        holder.tvProductQuantity.setText(product.getQuantity()+"");
         holder.tvDelete.setOnClickListener(v->{
             onProductClick.onDelete(product);
         });
@@ -64,13 +63,34 @@ public class AdapterProduct extends RecyclerView.Adapter<AdapterProduct.ViewHold
         });
     }
 
+//    private void loadCategoryTitle() {
+//        APIInterface apiInterface= APIClient.getClient().create(APIInterface.class);
+//        Call<APIInterface.ListCategory> call = apiInterface.getCategories();
+//        call.enqueue(new Callback<APIInterface.ListCategory>() {
+//            @Override
+//            public void onResponse(Call<APIInterface.ListCategory> call, Response<APIInterface.ListCategory> response) {
+//                APIInterface.ListCategory data = response.body();
+//                List<APIInterface.Category> categories = data.categories;
+//                cate=categories.toArray(new APIInterface.Category[0]);
+//                for (APIInterface.Category cat : categories) {
+//                    Log.d("ADT", "onResponse: cat:"+cat.name+"-->"+cat.id);
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<APIInterface.ListCategory> call, Throwable t) {
+//                Log.d("TAG", "onFailure: Load category fail:"+t.getMessage());
+//            }
+//        });
+//    }
+
     @Override
     public int getItemCount() {
         return list.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder{
-        TextView tvDelete, tvEdit, tvProductName, tvProductPrice, tvProductQuantity, tvProductType;
+        TextView tvDelete, tvEdit, tvProductName, tvProductPrice, tvProductType;
         ImageView imgProduct;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -78,7 +98,6 @@ public class AdapterProduct extends RecyclerView.Adapter<AdapterProduct.ViewHold
             tvEdit=itemView.findViewById(R.id.tvEdit);
             tvProductName=itemView.findViewById(R.id.tvProductName);
             tvProductPrice=itemView.findViewById(R.id.tvProductPrice);
-//            tvProductQuantity=itemView.findViewById(R.id.tvProductQuantity);
             tvProductType=itemView.findViewById(R.id.tvProductType);
             imgProduct=itemView.findViewById(R.id.imgProduct);
         }

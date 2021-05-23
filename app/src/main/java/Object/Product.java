@@ -1,22 +1,20 @@
 package Object;
 
+import android.util.Log;
+
+import java.util.List;
+
 public class Product {
     String id;
     String name, image;
-    int price;
-    String options;
-    int typeID;
+    List<Options> options;
+    int categoryId;
 
-    public Product() {
-    }
-
-    public Product(String id, String name, String image, int price, String options, int typeID) {
-        this.id = id;
+    public Product(String name, String image, List<Options> options, int categoryID) {
         this.name = name;
         this.image = image;
-        this.price = price;
         this.options = options;
-        this.typeID = typeID;
+        this.categoryId = categoryID;
     }
 
     public String getId() {
@@ -39,31 +37,58 @@ public class Product {
         return image;
     }
 
+    public String getFullLinkImage(){
+        return APIClient.HOST+image;
+    }
+
     public void setImage(String image) {
         this.image = image;
     }
 
-    public int getPrice() {
-        return price;
-    }
-
-    public void setPrice(int price) {
-        this.price = price;
-    }
-
-    public String getOptions() {
+    public List<Options> getOptions() {
         return options;
     }
 
-    public void setOptions(String options) {
+    public void setOptions(List<Options> options) {
         this.options = options;
     }
 
-    public int getTypeID() {
-        return typeID;
+    public int getCategoryId() {
+        //Log.d("TAG123", "getCategoryID: "+ categoryId);
+        return categoryId;
     }
 
-    public void setTypeID(int typeID) {
-        this.typeID = typeID;
+    // hien thi gia sp
+    public int getPrice(){
+        if(options != null && options.size() > 0){
+            int index=-1;
+            for (int i = 0; i < options.size(); i++) {
+                if(options.get(i).id == 0) {
+                    index = i;break;
+                }
+            }
+            if(index >= 0){
+                return options.get(index).price;
+            }else {
+                return -5;
+            }
+        }else{
+            return -10;
+        }
+    }
+
+    public void setCategoryId(int categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    @Override
+    public String toString() {
+        return "Product{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", image='" + image + '\'' +
+                ", options=" + options +
+                ", categoryId=" + categoryId +
+                '}';
     }
 }

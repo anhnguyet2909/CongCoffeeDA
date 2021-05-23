@@ -1,57 +1,52 @@
 package Object;
 
+import java.util.List;
+
 public class Receipt {
-    int id;
-    String tableName;
     String staffName;
-    String listProduct;
-    String date;
+    String staffPhone;
+    int additionalFee;
+    int discount;
+    int cash;
+    int change;
+    int[] orderIds;
 
-    public Receipt(int id, String tableName, String staffName, String listProduct, String date) {
-        this.id = id;
-        this.tableName = tableName;
+    public Receipt(String staffName, String staffPhone, int additionalFee, int discount, int cash, int change, int[] orderIds) {
         this.staffName = staffName;
-        this.listProduct = listProduct;
-        this.date = date;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getTableName() {
-        return tableName;
-    }
-
-    public void setTableName(String tableName) {
-        this.tableName = tableName;
+        this.staffPhone = staffPhone;
+        this.additionalFee = additionalFee;
+        this.discount = discount;
+        this.cash = cash;
+        this.change = change;
+        this.orderIds = orderIds;
     }
 
     public String getStaffName() {
         return staffName;
     }
 
-    public void setStaffName(String staffName) {
-        this.staffName = staffName;
+    public String getStaffPhone() {
+        return staffPhone;
     }
 
-    public String getListProduct() {
-        return listProduct;
+
+    public int getAdditionalFee() {
+        return additionalFee;
     }
 
-    public void setListProduct(String listProduct) {
-        this.listProduct = listProduct;
+    public int getDiscount() {
+        return discount;
     }
 
-    public String getDate() {
-        return date;
+    public int getCash() {
+        return cash;
     }
 
-    public void setDate(String date) {
-        this.date = date;
+    public int getChange() {
+        return change;
+    }
+
+    public int[] getOrderIds() {
+        return orderIds;
     }
 }

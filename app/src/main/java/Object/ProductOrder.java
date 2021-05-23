@@ -2,16 +2,35 @@ package Object;
 
 public class ProductOrder {
     String id;
-    String name, image;
-    int price, count;
+    String name, image, option;
+    int price, quantity;
 
-    public ProductOrder(String id, String name, String image, int price, int count) {
+    public String getOption() {
+        return option;
+    }
+
+    public void setOption(String option) {
+        this.option = option;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+    public ProductOrder(String id, String name, String option, String image, int price, int count) {
         this.id = id;
         this.name = name;
-        this.image = image;
+        this.option = option;
+        this.image = image.replace(APIClient.HOST,"");
         this.price = price;
-        this.count = count;
+        this.quantity = count;
     }
+
+
 
     public ProductOrder() {
     }
@@ -33,7 +52,7 @@ public class ProductOrder {
     }
 
     public String getImage() {
-        return image;
+        return APIClient.HOST+image;
     }
 
     public void setImage(String image) {
@@ -49,11 +68,11 @@ public class ProductOrder {
     }
 
     public int getCount() {
-        return count;
+        return quantity;
     }
 
     public void setCount(int count) {
-        this.count = count;
+        this.quantity = count;
     }
 
     @Override
@@ -63,7 +82,7 @@ public class ProductOrder {
                 ", name='" + name + '\'' +
                 ", image='" + image + '\'' +
                 ", price=" + price +
-                ", count=" + count +
+                ", quantity=" + quantity +
                 '}';
     }
 }

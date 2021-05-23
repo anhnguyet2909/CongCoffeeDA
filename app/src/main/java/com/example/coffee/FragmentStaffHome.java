@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,11 +21,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.coffee.databinding.FragmentStaffHomeBinding;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -35,14 +31,12 @@ import Object.*;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class FragmentStaffHome extends Fragment {
     FragmentStaffHomeBinding binding;
     ImageAdapter imageAdapter;
     List<Image> imageList;
-    List<Product> listCoffee, listTea, listJuice, listOthers;
+    List<Product> listCoffee, listTea, listJuice, listOthers, list;
     AdapterSaleProduct adapterCoffee, adapterTea, adapterJuice, adapterOthers;
     Timer timer;
     String product_id, product_name, product_image;
@@ -50,7 +44,7 @@ public class FragmentStaffHome extends Fragment {
     TextView tvShowProductName, tvShowProductPrice, btnSubtract, btnAdd, tvCount;
     ImageView imgShowProduct;
     int count;
-    List<ProductOrder> listOrder;
+    List<ProductOrder> listProductOrder;
 
     public static FragmentStaffHome newInstance() {
 
@@ -66,7 +60,7 @@ public class FragmentStaffHome extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding= DataBindingUtil.inflate(inflater, R.layout.fragment_staff_home, container, false);
 
-        listOrder=Singleton.getUniqInstance().getList();
+        listProductOrder =Singleton.getUniqInstance().getList();
         imageList=getListImage();
         imageAdapter=new ImageAdapter(getContext(), imageList);
         binding.viewPhoto.setAdapter(imageAdapter);
@@ -74,43 +68,79 @@ public class FragmentStaffHome extends Fragment {
         imageAdapter.registerDataSetObserver(binding.circleIndicator.getDataSetObserver());
         autoSlide();
 
-        FirebaseDatabase firebaseDatabase=FirebaseDatabase.getInstance();
-        DatabaseReference databaseReference=firebaseDatabase.getReference().child("products");
-        databaseReference.addValueEventListener(new ValueEventListener() {
+        list=new ArrayList<Product>();
+        listCoffee=new ArrayList<Product>();
+        listJuice=new ArrayList<Product>();
+        listTea=new ArrayList<Product>();
+        listOthers=new ArrayList<Product>();
+        loadCategoryTitle();
+        loadProductList();
+        return binding.getRoot();
+    }
+
+    private void loadCategoryTitle() {
+        APIInterface apiInterface= APIClient.getClient().create(APIInterface.class);
+        Call<APIInterface.ListCategory> call = apiInterface.getCategories();
+        call.enqueue(new Callback<APIInterface.ListCategory>() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                listCoffee=new ArrayList<>();
-                listTea=new ArrayList<>();
-                listJuice=new ArrayList<>();
-                listOthers=new ArrayList<>();
-                if(snapshot.hasChildren()){
-                    for(DataSnapshot dataSnapshot:snapshot.getChildren()){
-                        Product product=dataSnapshot.getValue(Product.class);
-                        if(product.getTypeID()==1){
-                            listCoffee.add(product);
-                        }
-                        else if(product.getTypeID()==2){
-                            listTea.add(product);
-                        }
-                        else if(product.getTypeID()==3){
-                            listJuice.add(product);
-                        }
-                        else{
-                            listOthers.add(product);
-                        }
+            public void onResponse(Call<APIInterface.ListCategory> call, Response<APIInterface.ListCategory> response) {
+                APIInterface.ListCategory data = response.body();
+                List<APIInterface.Category> categories = data.categories;
+                for (APIInterface.Category cat : categories) {
+                    Log.d("TAG123", "onResponse: cat:"+cat.name+"-->"+cat.id);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<APIInterface.ListCategory> call, Throwable t) {
+                Log.d("TAG", "onFailure: Load category fail:"+t.getMessage());
+            }
+        });
+    }
+
+
+    private void loadProductList() {
+        APIInterface apiInterface= APIClient.getClient().create(APIInterface.class);
+        Call<APIInterface.ListProduct> call=apiInterface.getListProduct();
+        call.enqueue(new Callback<APIInterface.ListProduct>() {
+            @Override
+            public void onResponse(Call<APIInterface.ListProduct> call, Response<APIInterface.ListProduct> response) {
+                APIInterface.ListProduct content = response.body();
+                list=content.items;
+                Log.d("TAG123", "onResponse: items.size:"+content.items.size());
+                Log.d("TAG123", "onResponse: code:"+response.code());
+
+                // cho nay tach category nhu the nay khong on
+                // 1. categoryId co the tahy doi
+                // 2. category name do admin qd va co the chinh sua
+                // khong phai categoryId luon la 1 2 3 4, co the la so khac
+                // tuy theo viec chinh sua category o tren database
+
+                for(Product i:list){
+                    switch (i.getCategoryId()){
+                        case 1:
+                            listCoffee.add(i);
+                            break;
+                        case 2:
+                            listTea.add(i);
+                            break;
+                        case 3:
+                            listJuice.add(i);
+                            break;
+                        case 4:
+                            listOthers.add(i);
+                            break;
                     }
                 }
                 allAdapter();
-
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
+            public void onFailure(Call<APIInterface.ListProduct> call, Throwable t) {
+                Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_LONG).show();
+                Log.d("Test", t.getMessage());//
             }
         });
-
-        return binding.getRoot();
     }
 
     public void alertDialog(){
@@ -124,7 +154,7 @@ public class FragmentStaffHome extends Fragment {
         tvCount=view.findViewById(R.id.tvCount);
         tvShowProductPrice.setText(product_price+"");
         tvShowProductName.setText(product_name);
-        Picasso.get().load(product_image).fit().into(imgShowProduct);
+        Picasso.get().load(product_image).into(imgShowProduct);
         count=Integer.parseInt(tvCount.getText().toString());
         btnSubtract.setOnClickListener(v->{
             count-=1;
@@ -139,10 +169,11 @@ public class FragmentStaffHome extends Fragment {
         builder.setPositiveButton("Thêm", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                ProductOrder productOrder=new ProductOrder(product_id, product_name, product_image, product_price, count);
+                ProductOrder productOrder=new ProductOrder(product_id, product_name, "", product_image, product_price, count);
                 if(count>0){
-                    listOrder.add(productOrder);
-                    Singleton.getUniqInstance().setList(listOrder);
+                    listProductOrder.add(productOrder);
+                   // Singleton.getUniqInstance().setList(listProductOrder); // ko can
+                    Log.d("TAG123", "onClick: add product ok  -> size:"+Singleton.getUniqInstance().getList().size());
                 }
             }
         })
@@ -206,6 +237,10 @@ public class FragmentStaffHome extends Fragment {
     public void allAdapter(){
         //Coffee
         adapterCoffee=new AdapterSaleProduct(listCoffee);
+        Log.d("TAG123", "allAdapter: listCoffee.size():"+listCoffee.size());
+        Log.d("TAG123", "allAdapter: listTea.size():"+listTea.size());
+        Log.d("TAG123", "allAdapter: listJuice.size():"+listJuice.size());
+        Log.d("TAG123", "allAdapter: listOthers.size():"+listOthers.size());
         RecyclerView.LayoutManager layoutManager=new LinearLayoutManager(getContext(),
                 RecyclerView.HORIZONTAL, false);
         binding.rvCoffee.setLayoutManager(layoutManager);
@@ -214,7 +249,7 @@ public class FragmentStaffHome extends Fragment {
             @Override
             public void onShowProduct(Product product) {
                 product_id=product.getId();
-                product_image=product.getImage();
+                product_image=product.getFullLinkImage();
                 product_name=product.getName();
                 product_price=product.getPrice();
                 alertDialog();
@@ -232,7 +267,7 @@ public class FragmentStaffHome extends Fragment {
             @Override
             public void onShowProduct(Product product) {
                 product_id=product.getId();
-                product_image=product.getImage();
+                product_image=product.getFullLinkImage();
                 product_name=product.getName();
                 product_price=product.getPrice();
                 alertDialog();
@@ -249,7 +284,7 @@ public class FragmentStaffHome extends Fragment {
             @Override
             public void onShowProduct(Product product) {
                 product_id=product.getId();
-                product_image=product.getImage();
+                product_image=product.getFullLinkImage();
                 product_name=product.getName();
                 product_price=product.getPrice();
                 alertDialog();
@@ -266,7 +301,7 @@ public class FragmentStaffHome extends Fragment {
             @Override
             public void onShowProduct(Product product) {
                 product_id=product.getId();
-                product_image=product.getImage();
+                product_image=product.getFullLinkImage();
                 product_name=product.getName();
                 product_price=product.getPrice();
                 alertDialog();
